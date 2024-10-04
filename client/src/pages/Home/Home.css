@@ -1,0 +1,21 @@
+.main-body{
+    height: 70vh;
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+}
+
+.main-body-content{
+    width: 70%;
+}
+
+.main-body h3{
+    margin: 0;
+    font-size: 30px;
+}
+
+.main-body p{
+    margin-top: 8px ;
+    word-spacing: 4px;
+}

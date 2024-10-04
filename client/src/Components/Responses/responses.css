@@ -1,0 +1,30 @@
+.success{
+    width: 100%;
+    text-align: center;
+    margin: 2rem 0;
+
+}
+
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.success h1{
+    padding: 2rem 1rem;
+    width: 100%;
+    text-align: center;
+    
+    color: white;
+    background-color: rgb(126, 185, 126);
+}
+
+.login-btn{
+    padding: 12px 1.5rem;
+    background-color: rgb(48, 48, 48);
+    color: white;
+    
+    margin: 2rem 0;
+    display: inline-block;
+}

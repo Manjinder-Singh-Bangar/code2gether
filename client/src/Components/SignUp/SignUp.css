@@ -1,0 +1,42 @@
+form{
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    margin: auto;
+    gap: 1rem;
+}
+
+form input{
+    padding: 12px;
+    border-radius: 12px;
+    border: 2px solid rgb(178, 178, 178);
+
+}
+
+form input:focus{
+    outline: none;
+    border: 2px solid rgb(86, 86, 86);
+}
+
+form button{
+    padding: 12px;
+    background-color:rgb(48, 48, 48);
+    border: 2px solid rgb(48, 48, 48);
+    color: white;
+    border-radius: 12px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 300ms ease-in-out;
+}
+
+form button:hover{
+    background-color: white;
+    color: rgb(48, 48, 48);
+
+}
+
+.signup{
+    display: flex;
+    align-items: center;
+    height: 70vh;
+}
