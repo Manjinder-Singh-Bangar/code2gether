@@ -2,6 +2,7 @@ import {User} from "../models/user.model.js"
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { sendVerificationEmail } from "../utils/emailSender.js"
+import jwt from "jsonwebtoken"
 
 
 const generateVerificationToken = async (email) =>{
@@ -57,8 +58,9 @@ const registerUser = async (req, res) =>{
         })
 
         const verificationTokenVal = user.generateVerificationToken(user.email)
-
-        sendVerificationEmail(email, fullName, `http://localhost:5000/${verificationToken}`)
+        user.verificationToken = verificationTokenVal;
+        user.save({validateBeforeSave:false})
+        sendVerificationEmail(email, fullName, `http://localhost:5173/verify/${verificationTokenVal}`)
         const createdUser = await User.findById(user._id).select("-password -refreshToken")
             // verificationToken = User.generateVerificationToken();
     
@@ -69,19 +71,22 @@ const registerUser = async (req, res) =>{
     } catch (err) {
        throw new ApiError(501, err.message || "Error occured while creating user")
     }
-
 }
 
-const verifyingUser = async (err, req, res, next) =>{
+const verifyingUser = async (req, res) =>{
 
     const {token} = req.params;
-
-    
-    const decoded = await jwt.verify(token, process.env.VERIFICATION_TOKEN_SECRET);
-      
-    if(!decoded){
-        return res.status(401).json(new ApiResponse(401, null, "Invaild token"))
+    let decoded
+    try {
+        decoded = await jwt.verify(token, process.env.VERIFICATION_TOKEN_SECRET);
+        if(!decoded){
+            throw new ApiError(401, "Invalid Token")
+        }
+    } catch (error) {
+        return res.json(new ApiResponse(401, null, error.message))
     }
+      
+    
 
     const user = await User.findOne({email: decoded.email})
 
@@ -91,6 +96,10 @@ const verifyingUser = async (err, req, res, next) =>{
     user.save({validateBeforeSave: false})
 
     return res.status(201).json(new ApiResponse(201, null, "User has been verified"))
+}
+
+const loginUser = async (err, req, res, next) =>{
+    
 }
 
 export {registerUser, verifyingUser};

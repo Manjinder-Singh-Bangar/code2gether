@@ -7,6 +7,6 @@ router.route("/signup").post(
     registerUser
 )
 
-router.route("/verify/:token").post(verifyingUser)
+router.route("/verify/:token").get(verifyingUser)
 
 export default router;

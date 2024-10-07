@@ -4,6 +4,7 @@ import "../public/Assets/CSS/index.css"
 import Layout from "./utils/Layout"
 import SignUp from "./Components/SignUp/SignUp"
 import Success from "./Components/Responses/Success"
+import VerifyingUser from "./Components/VerifyingUser/VerifyingUser"
 
 function App() {
   const routes = [
@@ -11,10 +12,14 @@ function App() {
       path: "/",
       element: <Layout />,
       children:[
-        {
+      {
           path: "",
           element: <Home />
 
+      },
+      {
+        path: "verify/:token",
+        element: <VerifyingUser />
       },
       {
         path: "signup",
