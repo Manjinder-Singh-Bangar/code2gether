@@ -3,8 +3,11 @@ import {RouterProvider, createBrowserRouter} from "react-router-dom"
 import "../public/Assets/CSS/index.css"
 import Layout from "./utils/Layout"
 import SignUp from "./Components/SignUp/SignUp"
+import Login from "./Components/Login/Login"
 import Success from "./Components/Responses/Success"
 import VerifyingUser from "./Components/VerifyingUser/VerifyingUser"
+import UserHome from "./pages/UserHome/UserHome"
+
 
 function App() {
   const routes = [
@@ -13,9 +16,17 @@ function App() {
       element: <Layout />,
       children:[
       {
+        path:"home",
+        element: <UserHome />
+      }, 
+      {
           path: "",
           element: <Home />
 
+      },
+      {
+          path:"/login",
+          element: <Login />
       },
       {
         path: "verify/:token",

@@ -19,6 +19,16 @@ const userSchema = mongoose.Schema({
         trim: true
     },
 
+    profilePicture:{
+        type: String,
+        
+    },
+
+    userBio:{
+        type: String,
+        
+    },
+
     password:{
         type: String,
         required: [true, "Password is required"]

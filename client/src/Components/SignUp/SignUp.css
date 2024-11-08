@@ -38,5 +38,6 @@ form button:hover{
 .signup{
     display: flex;
     align-items: center;
-    height: 70vh;
+    height: auto;
+    padding: 5rem 0;
 }

@@ -3,12 +3,15 @@ import dotenv from "dotenv"
 import dbConnect from "./utils/db.js";
 import router from "./routes/user.routes.js";
 import cors from "cors"
+import cookieparser from "cookie-parser"
 
 dotenv.config()
 dbConnect();
 
 const app = express();
 const PORT = process.env.PORT;
+
+app.use(cookieparser());
 
 app.get("/", (req, res) =>{
     res.send("hello");
