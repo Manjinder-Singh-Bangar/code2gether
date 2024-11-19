@@ -29,7 +29,7 @@ const handleRefreshToken = async (req, res) =>{
 
     return res
     .cookie("accessToken", accessToken, options)
-    .json(new ApiResponse(201,{ accessToken}, "Access Token Generated"))
+    .json(new ApiResponse(201,accessToken, "Access Token Generated"))
 }
 
 export {handleRefreshToken}
