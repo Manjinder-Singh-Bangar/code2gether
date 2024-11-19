@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { registerUser, verifyingUser, loginUser, gettingAllUser, logoutUser} from "../controllers/user.controller.js";
 import upload from "../Middleware/Multer.js";
-import { verifyAccessToken, handleTokenExpiration } from "../Middleware/AccessTokenVerification.js";
+import { verifyAccessToken } from "../Middleware/AccessTokenVerification.js";
+import { handleRefreshToken } from "../controllers/refresh.controller.js";
 
 const router = Router();
 
@@ -20,8 +21,8 @@ router.route("/login").post(
 
 router.route("/logout").post(verifyAccessToken, logoutUser)
 
-
-router.route("/people").get(verifyAccessToken, handleTokenExpiration, gettingAllUser)
+router.route("/refresh").get(handleRefreshToken)
+router.route("/people").get(verifyAccessToken, gettingAllUser)
 
 
 router.route("/verify/:token").get(verifyingUser)

@@ -16,7 +16,7 @@ const generateAccessTokenAndRefreshToken = async (user_id) =>{
     
         user.refreshToken = refreshToken
         await user.save({ validateBeforeSave: false })
-    
+        
         return {refreshToken, accessToken}
         
     } catch (error) {
@@ -133,10 +133,11 @@ const verifyingUser = async (req, res) =>{
 const loginUser = async (req, res) =>{
     const {email, password} = req.body;
 
-    
+    console.log(email, password)
     try{
         const user = await User.findOne({email})
-        if(!user) throw new ApiError(404, "User not found")
+
+        if(!user) return res.json(new ApiResponse(401, {}, "User not Found"))
         
         const isUserValid = await user.isPasswordCorrect(password)
 
@@ -158,7 +159,7 @@ const loginUser = async (req, res) =>{
         
         return res
         .status(200)
-        .cookie("accessToken", accessToken, options)
+        .cookie("accessToken", refreshToken, options)
         .cookie("refreshToken", refreshToken, options)
         .json(new ApiResponse(201, {user: loggedIn, accessToken, refreshToken}, "User has Logged In"))
         
@@ -205,8 +206,8 @@ const logoutUser = async (req, res) =>{
 
 const gettingAllUser = async (req, res) =>{
     try {
-        const users = await User.findOne({}).select("-password -refreshToken")
-        console.log(users)
+        const users = await User.find().select("-password -refreshToken")
+        
         res.status(200).json(new ApiResponse(200, users, "All users has been fetched"))
         
     } catch (error) {
