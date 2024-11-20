@@ -16,7 +16,7 @@ const handleRefreshToken = async (req, res) =>{
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET
     )
-    if(!decoded) return res.sendStatus(401).json(new ApiError(403, "Unauthorized"))
+    if(!decoded) return res.status(401).json(new ApiError(403, "Unauthorized"))
 
     const user = await User.findById(decoded._id)
     

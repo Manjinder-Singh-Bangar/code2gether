@@ -1,4 +1,4 @@
-import {User} from "../models/user.model.js"
+import { User } from "../models/user.model.js"
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { uploadOnCloudinary } from "../utils/Cloudinary.js"
@@ -7,38 +7,38 @@ import jwt from "jsonwebtoken"
 import upload from "../Middleware/Multer.js"
 
 
-const generateAccessTokenAndRefreshToken = async (user_id) =>{
+const generateAccessTokenAndRefreshToken = async (user_id) => {
     try {
         const user = await User.findOne(user_id)
-    
+
         const refreshToken = user.generateRefreshToken();
         const accessToken = user.generateAccessToken();
-    
+
         user.refreshToken = refreshToken
         await user.save({ validateBeforeSave: false })
-        
-        return {refreshToken, accessToken}
-        
+
+        return { refreshToken, accessToken }
+
     } catch (error) {
         throw new ApiError(500, "Some went wrong while generating Access and Refresh Tokens")
     }
 
 }
 
-const generateVerificationToken = async (email) =>{
-    try{
-        const user = await User.findOne({email})
+const generateVerificationToken = async (email) => {
+    try {
+        const user = await User.findOne({ email })
         const verification = user.generateVerificationToken();
 
         user.verificationToken = verification
 
-        await user.save({validateBeforeSave:false})
-    }catch(error){
+        await user.save({ validateBeforeSave: false })
+    } catch (error) {
         console.log("Error occured while generating the verification token ", error)
     }
 }
 
-const registerUser = async (req, res) =>{
+const registerUser = async (req, res) => {
 
     // get the data from frontend
     // check if the fields are filled with information it supposed to store
@@ -48,34 +48,34 @@ const registerUser = async (req, res) =>{
     // set the verified true to user if the user has verified it's email\
 
     try {
-        
-        const {fullName, username, email, password, phoneNumber,emailVerified, verificationToken} = req.body
-    
-        if([fullName, username, email, password, phoneNumber].some((field) => field?.trim() === "")){
+
+        const { fullName, username, email, password, phoneNumber, emailVerified, verificationToken } = req.body
+
+        if ([fullName, username, email, password, phoneNumber].some((field) => field?.trim() === "")) {
             return res.status(409).json(new ApiResponse(409, null, "All fields are required"));
         }
-    
+
         const userExists = await User.findOne({
             $or: [
-              { email: email }, 
-              { phoneNumber: phoneNumber },
-              {username : username}
+                { email: email },
+                { phoneNumber: phoneNumber },
+                { username: username }
             ]
-          }).then((user) => user ? true : false)
-          
-        if(userExists){
+        }).then((user) => user ? true : false)
+
+        if (userExists) {
             return res.status(409).json(new ApiResponse(409, null, "This email, phone number, or username is already registered with us"));
         }
 
         const localProfilePicturePath = req.files?.profilePicture?.[0]?.path;
-        
-        if(!localProfilePicturePath){
-            return res.status(400).json(new ApiResponse(400,{}, "please upload the file"))
+
+        if (!localProfilePicturePath) {
+            return res.status(400).json(new ApiResponse(400, {}, "please upload the file"))
         }
 
         const response = await uploadOnCloudinary(localProfilePicturePath)
 
-        
+
         const user = await User.create({
             fullName,
             username,
@@ -84,95 +84,93 @@ const registerUser = async (req, res) =>{
             verificationToken,
             emailVerified,
             password
-            
+
         })
 
         user.profilePicture = response.url;
         await user.save;
         const verificationTokenVal = user.generateVerificationToken(user.email)
         user.verificationToken = verificationTokenVal;
-        user.save({validateBeforeSave:false})
+        user.save({ validateBeforeSave: false })
         sendVerificationEmail(email, fullName, `http://localhost:5173/verify/${verificationTokenVal}`)
         const createdUser = await User.findById(user._id).select("-password -refreshToken")
-            // verificationToken = User.generateVerificationToken();
-    
+        // verificationToken = User.generateVerificationToken();
+
         return res
-        .status(200)
-        .json(new ApiResponse(200, createdUser,"The account has been created"
-        ))
+            .status(200)
+            .json(new ApiResponse(200, createdUser, "The account has been created"
+            ))
     } catch (err) {
-       throw new ApiError(501, err.message || "Error occured while creating user")
+        throw new ApiError(501, err.message || "Error occured while creating user")
     }
 }
 
-const verifyingUser = async (req, res) =>{
+const verifyingUser = async (req, res) => {
 
-    const {token} = req.params;
+    const { token } = req.params;
     let decoded
     try {
-        decoded = await jwt.verify(token, process.env.VERIFICATION_TOKEN_SECRET);
-        if(!decoded){
+        decoded = jwt.verify(token, process.env.VERIFICATION_TOKEN_SECRET);
+        if (!decoded) {
             throw new ApiError(401, "Invalid Token")
         }
     } catch (error) {
-        return res.json(new ApiResponse(401, null, error.message))
+        return res.json(new ApiError(401, null, error.message))
     }
-      
-    
 
-    const user = await User.findOne({email: decoded.email})
+
+
+    const user = await User.findOne({ email: decoded.email })
 
     user.emailVerified = true
     user.verificationToken = ""
 
-    user.save({validateBeforeSave: false})
+    user.save({ validateBeforeSave: false })
 
     return res.status(201).json(new ApiResponse(201, null, "User has been verified"))
 }
 
-const loginUser = async (req, res) =>{
-    const {email, password} = req.body;
+const loginUser = async (req, res) => {
+    const { email, password } = req.body;
 
     console.log(email, password)
-    try{
-        const user = await User.findOne({email})
 
-        if(!user) return res.json(new ApiResponse(401, {}, "User not Found"))
-        
-        const isUserValid = await user.isPasswordCorrect(password)
+    const user = await User.findOne({ email })
 
-        if(!isUserValid) throw new ApiError(401, "Incorrect password")
+    if (!user) return res.status(401).json(new ApiResponse(401,null, "User not Found"))
 
-        if(!user.emailVerified){
-            console.log(user.emailVerified)
-            return res.json(new ApiResponse(400,null, "Please Verify your email"))
-        }
+    const isUserValid = await user.isPasswordCorrect(password)
 
-        const {refreshToken, accessToken} = await generateAccessTokenAndRefreshToken(user._id);
+    if (!isUserValid)return res.status(401).json(new ApiResponse(401,null, "Incorrect password"))
 
-        const loggedIn = await User.findById(user._id).select("-password -refreshToken")
-
-        const options = {
-            httpOnly: true,
-            secure: true
-        }
-        
-        return res
-        .status(200)
-        .cookie("accessToken", refreshToken, options)
-        .cookie("refreshToken", refreshToken, options)
-        .json(new ApiResponse(201, {user: loggedIn, accessToken, refreshToken}, "User has Logged In"))
-        
-
-    }catch(error){
-        return res.json(new ApiResponse(error.statusCode,null, error.message))
+    if (!user.emailVerified) {
+        console.log(user.emailVerified)
+        return res.json(new ApiResponse(400,null, "Please Verify your email"))
     }
 
-    
+    const { refreshToken, accessToken } = await generateAccessTokenAndRefreshToken(user._id);
+
+    const loggedIn = await User.findById(user._id).select("-password -refreshToken")
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    return res
+        .status(200)
+        .cookie("refreshToken", refreshToken, options)
+        .cookie("accessToken", accessToken, options)
+        .json(new ApiResponse(201, { user: loggedIn, accessToken, refreshToken }, "User has Logged In"))
+
+
 }
 
-const logoutUser = async (req, res) =>{
-    try{
+
+
+
+const logoutUser = async (req, res) => {
+    try {
         const user = await User.findByIdAndUpdate(
             req.user._id,
             {
@@ -192,30 +190,35 @@ const logoutUser = async (req, res) =>{
             secure: true
         }
 
-        user.save({validateBeforeSave:false})
+        user.save({ validateBeforeSave: false })
 
-    return res.clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, null, "User has logout"))
+        return res.clearCookie("accessToken", options)
+            .clearCookie("refreshToken", options)
+            .json(new ApiResponse(200, null, "User has logout"))
 
     }
-    catch(error){
+    catch (error) {
         res.status(501, {}, "Error ")
     }
-} 
+}
 
-const gettingAllUser = async (req, res) =>{
+const gettingAllUser = async (req, res) => {
+    const loggedInUser = req.user._id;
+    console.log(loggedInUser)
     try {
-        const users = await User.find().select("-password -refreshToken")
+        const users = await User.find({_id: {$ne : loggedInUser}}).select("-password -refreshToken")
+        if (!users) {
+            return res.status(500).json(new ApiError(500, "User not found"))
+        }
         
-        res.status(200).json(new ApiResponse(200, users, "All users has been fetched"))
-        
+        return res.status(200).json(new ApiResponse(200, users, "All users has been fetched"))
+
     } catch (error) {
-        res.status(500).json(new ApiError(500, "Error while fetching profiles"))
+        return res.status(500).json(new ApiError(500, "Error while fetching profiles"))
     }
 
 }
 
 
 
-export {registerUser, verifyingUser, loginUser, gettingAllUser, logoutUser};
+export { registerUser, verifyingUser, loginUser, gettingAllUser, logoutUser };
