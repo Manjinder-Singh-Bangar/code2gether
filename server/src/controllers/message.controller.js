@@ -1,5 +1,5 @@
 import { Message } from "../models/message.model.js";
-import { User } from "../models/user.model";
+import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/Cloudinary.js";
@@ -67,4 +67,22 @@ export const sendMessage = async(req, res) =>{
     }catch(error){
         return res.status(500).json(new ApiError(500, error.message || "Something happened wrong while sending message"))
     }
+}
+
+export const gettingRecieverUser = async (req,res) =>{
+    try {
+        const {_id} = req.params
+        console.log(_id)
+        if(!_id) return res.status(401).json(new ApiResponse(401, null, "No user selected"))
+        
+        const receiverUser = await User.findById(_id).select("-password -refreshToken")
+    
+        if(!receiverUser) return res.status(401).json(new ApiResponse(401, null, "User does not exists"))
+        
+        return res.status(200).json(new ApiResponse(200, receiverUser, "Receiver Fetched"))
+        
+    } catch (error) {
+        return res.status(401).json(new ApiError(401, error.message || "Cannot find reciever"))
+    }
+    
 }

@@ -6,7 +6,7 @@ dotenv.config();
 
 const verifyAccessToken = async (req, res, next) =>{
     const accessToken = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
-    console.log("AccessToken ", accessToken)
+    
     if (!accessToken) {
         return res.status(401).json(new ApiResponse(401, null, "Access denied. No token provided."));
     }

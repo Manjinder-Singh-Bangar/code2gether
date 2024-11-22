@@ -2,7 +2,7 @@ import express from "express"
 import dotenv from "dotenv"
 import dbConnect from "./utils/db.js";
 import router from "./routes/user.routes.js";
-import router from "./routes/message.routes.js";
+import messageRoutes from "./routes/message.routes.js";
 import cors from "cors"
 import cookieparser from "cookie-parser"
 

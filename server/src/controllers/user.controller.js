@@ -221,4 +221,6 @@ const gettingAllUser = async (req, res) => {
 
 
 
+
+
 export { registerUser, verifyingUser, loginUser, gettingAllUser, logoutUser };
