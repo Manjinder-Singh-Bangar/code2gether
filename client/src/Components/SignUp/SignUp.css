@@ -4,6 +4,7 @@ form{
     width: 40%;
     margin: auto;
     gap: 1rem;
+    
 }
 
 form input{
@@ -37,6 +38,7 @@ form button:hover{
 
 .signup{
     display: flex;
+    justify-content: center;
     align-items: center;
     height: auto;
     padding: 5rem 0;

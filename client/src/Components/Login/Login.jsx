@@ -1,85 +1,104 @@
-import React, { useState } from 'react'
-import {useNavigate} from "react-router-dom"
+import { useRef, useState, useEffect } from "react";
 import "./Login.css"
+import axios from "../../utils/axios";
+import UseAuth from "../../Hooks/UseAuth";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const Login =  () => {
+const Login = () => {
+  const userRef = useRef()
+  const errRef = useRef()
+  const location = useLocation()
+  const navigate = useNavigate()
+  const from = location.state?.from?.pathname || "/"
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [responseMsg, setResponseMsg] = useState("")
-  const navigate = useNavigate();
-  
-  const handleLoginForm = (e) =>{
-    e.preventDefault();
-    const data = {email, password}
-    try {
-      
-      fetch("http://localhost:5000/api/v1/users/login", {
-        method: "post",
-        headers:{
-          "Content-Type": 'application/json'
-        },
-        body:JSON.stringify({
-         ...data
-        })
-      }).then((response) => {
-        if (!response.ok) {
-          
-          return response.json().then((result) => {
-            throw new Error(result.message || "Error logging in.");
-          });
-        }
-        return response.json();
-      }).then((result) =>{
-        setResponseMsg(result.message)
-        navigate("/home");
-        
-      }).catch((errormsg) =>{
-        setResponseMsg(errormsg.message)
-      })
-    } catch (error) {
-      console.log(error)
+  const [errorMsg, setErrorMsg] = useState("")
+  const { setAuth } = UseAuth()
+  const LOGIN_URL = "users/login"
+
+
+  useEffect(() => {
+    userRef.current.focus()
+  }, [])
+
+  useEffect(() => {
+    setErrorMsg("")
+  }, [password, email])
+
+  const submitHandler = async (e) => {
+    e.preventDefault()
+    const data = {
+      email,
+      password
     }
-  
-    
+
+    try {
+      const response = await axios.post(
+        LOGIN_URL,
+        data,
+        {
+          Headers: { 'Content-Type': 'application/json' },
+          withCredentials: true
+        }
+      );
+
+      if (!response) {
+        console.log(response)
+        console.log("response is not ok")
+        return;
+      }
+
+      const accessToken = response?.data?.data?.accessToken
+      const user = { accessToken, email }
+
+      setAuth({ user })
+      navigate('/');
+      setEmail("")
+      setPassword("")
+
+    } catch (error) {
+      if(error.response.data.message){
+        
+        setErrorMsg(error.response.data.message)
+      }
+      else if (error.response) {
+        // Server responded with a status other than 2xx
+        console.error("Error response:", error.response.data);
+      } else if (error.request) {
+        // Request was made but no response was received
+        console.error("No response received:", error.request);
+      } else {
+        // Something else happened
+        console.error("Error message:", error.message);
+      }
+    }
+
   }
-
-  return (<div className='login-section'>
-    <form action="" onSubmit={handleLoginForm} className='loginForm'>
-
-      <h3>{responseMsg ? responseMsg : ""}</h3>
-      <h1>Login Here</h1>
+  return (
+    <section className="login-section">
+      <p ref={errRef} className={errorMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errorMsg}</p>
+      <h1>Login</h1>
+      <form onSubmit={submitHandler}>
+        <label htmlFor="email">Email:</label>
         <input
-        id='email'
-        onChange={(e) => setEmail(e.target.value)}
-        className='loginInput'
-        type="email"
-        placeholder="Email"
-        required
-         />
-        <input   
-        id='password' 
-        onChange={(e) => setPassword(e.target.value)}
-        className='loginInput'
-        type="password"
-        placeholder="Password"
-        required 
+          type="email"
+          id="email"
+          onChange={(e) => setEmail(e.target.value)}
+          value={email}
+          autoComplete="off"
+          ref={userRef}
         />
-        <button type='submit' className='logInButton'>Log In</button>
-    </form>
-
-  </div>
+        <label htmlFor="password">Password:</label>
+        <input
+          type="password"
+          id="password"
+          onChange={(e) => setPassword(e.target.value)}
+          value={password}
+        />
+        <button>Log In</button>
+      </form>
+    </section>
   )
 }
 
 export default Login
-
-
-// import React from 'react'
-
-// const Login = () => {
-//   return (
-//     <div>Login</div>
-//   )
-// }
-
-// export default Login

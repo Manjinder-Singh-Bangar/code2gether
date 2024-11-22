@@ -1,0 +1,38 @@
+
+.users{
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    padding: 3rem;
+}
+
+.user{
+    gap: 1rem;
+    align-items: center;
+    background-color: antiquewhite;
+    padding: 12px;
+    justify-content: space-between;
+    display: flex;
+}
+
+
+.user img{
+    width: 50px;
+}
+.user-body{
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.center-text{
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.btn{
+    padding: 10px;
+    background-color: white;
+}
