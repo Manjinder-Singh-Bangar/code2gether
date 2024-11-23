@@ -1,8 +1,14 @@
 import { create } from "zustand";
 import toast from "react-hot-toast";
-
+import { io } from "socket.io-client";
+import UseAuth from "../Hooks/UseAuth";
 
 export const useChatStore = create((set, get) => ({
+  auth:null,
+  setUserAuth:(newAuth) =>{
+    console.log("setting new auth: " ,newAuth)
+    set({auth: newAuth})
+  },
   messages: [],
   users: [],
   selectedUser: null,
@@ -71,4 +77,16 @@ export const useChatStore = create((set, get) => ({
   },
 
   setSelectedUser: (selectedUser) => set({ selectedUser }),
+
+  connectSocket: () =>{
+    const {auth} = get();
+    console.log(auth)
+    if(!auth || get().socket?.connected) return;
+    const socket = io("http://localhost:5000")
+    socket.connect()
+
+    socket.on("disconnect", ()=>{
+      console.log("User disconnected", socket.id)
+    })
+  }
 }));

@@ -3,6 +3,7 @@ import "./Login.css"
 import axios from "../../utils/axios";
 import UseAuth from "../../Hooks/UseAuth";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useChatStore } from "../../Store/useChatStore";
 
 const Login = () => {
   const userRef = useRef()
@@ -15,7 +16,8 @@ const Login = () => {
   const [errorMsg, setErrorMsg] = useState("")
   const { setAuth } = UseAuth()
   const LOGIN_URL = "users/login"
-
+  const {connectSocket} = useChatStore();
+  const setUserAuth = useChatStore((state) => state.setUserAuth);
 
   useEffect(() => {
     userRef.current.focus()
@@ -50,7 +52,9 @@ const Login = () => {
 
       const accessToken = response?.data?.data?.accessToken
       const user = { accessToken, email }
-
+      setUserAuth({user})
+      connectSocket();
+      console.log(user)
       setAuth({ user })
       navigate('/');
       setEmail("")

@@ -1,15 +1,15 @@
-import express from "express"
 import dotenv from "dotenv"
+import express from "express";
 import dbConnect from "./utils/db.js";
 import router from "./routes/user.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 import cors from "cors"
 import cookieparser from "cookie-parser"
+import {server, app} from "./utils/Socket.js"
 
 dotenv.config()
 dbConnect();
 
-const app = express();
 const PORT = process.env.PORT;
 
 app.use(cookieparser());
@@ -31,6 +31,6 @@ app.use(express.urlencoded({extended:true, limit:"16kb"}))
 app.use("/api/v1/users", router)
 app.use("/api/v1/message", messageRoutes)
 
-app.listen(PORT, ()=>{
+server.listen(PORT, ()=>{
     console.log("server is running on 5000")
 })
