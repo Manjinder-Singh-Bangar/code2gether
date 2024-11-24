@@ -1,20 +1,47 @@
-import React from 'react'
+import React, {useState} from 'react'
+import {useChatStore} from '../Store/useChatStore';
+import { axiosPrivate } from '../utils/axios';
 
 const MessageInput = () => {
+  const { sendMessage,  } = useChatStore();
+  const [message, setMessage] = useState('');
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+
+    try {
+      console.log('Sending message:', message);
+      if (!message) {
+        console.warn('Message is empty');
+        return;
+      }
+      
+      const response = await sendMessage(message, axiosPrivate);
+      console.log('Message sent successfully:', response);
+      
+      setMessage('');
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+  };
+
   return (
-    <div className="flex gap-2">
-      <input
-        type="text"
+    
+      <form className='flex gap-2' onSubmit={handleSendMessage}>       
+        <input
+          type="text"
+        onChange={(e) => setMessage(e.target.value)}
+        value={message}
         placeholder="Type your message..."
         className="flex-1 p-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
-      <button
-        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-      >
+        <button
+          type="submit"
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+        >
         Send
-      </button>
-    </div>
+        </button>
+      </form>
+    
   )
 }
-
-export default MessageInput
+export default MessageInput;

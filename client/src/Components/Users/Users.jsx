@@ -6,11 +6,15 @@ import { useChatStore } from "../../Store/useChatStore";
 import { Link } from "react-router-dom";
 
 const Users = () => {
-  const {setSelectedUser} = useChatStore()
+  const {selectedUser, onlineUsers} = useChatStore()
   const [users, setUsers] = useState();
   const axiosPrivate = UseAxiosPrivate();
   const auth = UseAuth();
+
   const user = useRef(null)
+  
+  const setSelectedUser = useChatStore(state => state.setSelectedUser);
+
   
   // Getting User from the database
   useEffect(() => {
@@ -43,6 +47,7 @@ const Users = () => {
 
   const handleChatLinkClick = (userId) =>{
     setSelectedUser(userId)
+    console.log(selectedUser)
   }
   
   return (

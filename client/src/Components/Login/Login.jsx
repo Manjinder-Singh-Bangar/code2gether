@@ -16,7 +16,7 @@ const Login = () => {
   const [errorMsg, setErrorMsg] = useState("")
   const { setAuth } = UseAuth()
   const LOGIN_URL = "users/login"
-  const {connectSocket} = useChatStore();
+  const {connectSocket, setUserId} = useChatStore();
   const setUserAuth = useChatStore((state) => state.setUserAuth);
 
   useEffect(() => {
@@ -44,24 +44,18 @@ const Login = () => {
         }
       );
 
-      if (!response) {
-        console.log(response)
-        console.log("response is not ok")
-        return;
-      }
-
       const accessToken = response?.data?.data?.accessToken
       const user = { accessToken, email }
       setUserAuth({user})
+      setUserId(response.data.data.user._id)
       connectSocket();
-      console.log(user)
       setAuth({ user })
       navigate('/');
       setEmail("")
       setPassword("")
-
+      return;
     } catch (error) {
-      if(error.response.data.message){
+      if(error.response?.data?.message){
         
         setErrorMsg(error.response.data.message)
       }
@@ -73,7 +67,7 @@ const Login = () => {
         console.error("No response received:", error.request);
       } else {
         // Something else happened
-        console.error("Error message:", error.message);
+        console.error("Error message:", error?.message);
       }
     }
 

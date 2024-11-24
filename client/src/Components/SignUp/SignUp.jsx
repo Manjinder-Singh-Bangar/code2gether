@@ -65,7 +65,7 @@ const SignUp = () => {
         <input type="email" onChange={(e) => setEmail(e.target.value)} placeholder='Email' />
         <input type="password" onChange={(e) => setPassword(e.target.value)} placeholder='Password' />
         <input type="password" onChange={(e) => setPassword(e.target.value)} placeholder='Password' />
-        <label for="imageUpload">Profile Picture</label>
+        <label htmlFor="imageUpload">Profile Picture</label>
         <input type="file"onChange={(e) => setFile(e.target.files[0])} id="imageUpload" name="image" accept="image/*"></input>
         <input type="number" onChange={(e) => setPhoneNumber(e.target.value)} placeholder='Mobile number'/>
         <button onClick={handleSubmit}  type='submit'>Sign Up</button>
