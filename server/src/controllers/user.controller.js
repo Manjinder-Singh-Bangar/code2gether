@@ -161,7 +161,7 @@ const loginUser = async (req, res) => {
         .status(200)
         .cookie("refreshToken", refreshToken, options)
         .cookie("accessToken", accessToken, options)
-        .json(new ApiResponse(201, { user: loggedIn, accessToken, refreshToken }, "User has Logged In"))
+        .json(new ApiResponse(201, { user: loggedIn, accessToken, refreshToken, userId: user._id }, "User has Logged In"))
 
 
 }
@@ -183,8 +183,6 @@ const logoutUser = async (req, res) => {
             }
         )
 
-        console.log(user)
-
         const options = {
             httpOnly: true,
             secure: true
@@ -204,7 +202,7 @@ const logoutUser = async (req, res) => {
 
 const gettingAllUser = async (req, res) => {
     const loggedInUser = req.user._id;
-    console.log(loggedInUser)
+    
     try {
         const users = await User.find({_id: {$ne : loggedInUser}}).select("-password -refreshToken")
         if (!users) {
