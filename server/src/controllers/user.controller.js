@@ -101,7 +101,7 @@ const registerUser = async (req, res) => {
             .json(new ApiResponse(200, createdUser, "The account has been created"
             ))
     } catch (err) {
-        throw new ApiError(501, err.message || "Error occured while creating user")
+        return res.status(501).json(new ApiError(501, err.message || "Error occured while creating user"))
     }
 }
 
