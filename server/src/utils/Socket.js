@@ -22,10 +22,10 @@ const userSocketMap = {}
 
 io.on("connection", (socket) => {
     console.log(`User connected ${socket.id}`)
-
+    
     const userId = socket.handshake.query.userId
     if (userId) userSocketMap[userId] = socket.id
-    console.log("userSocketMap[userId] ", userSocketMap[userId])
+    console.log("userSocketMap ", userSocketMap)
 
     io.emit("getOnlineUsers", Object.keys(userSocketMap))
 

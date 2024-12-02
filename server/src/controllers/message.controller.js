@@ -54,6 +54,8 @@ export const sendMessage = async(req, res) =>{
             imageUrl = response.secure_url;
         }
 
+        console.log("text: ", text)
+
 
         const newMessage = await Message.create({
             senderId,
@@ -72,7 +74,7 @@ export const sendMessage = async(req, res) =>{
             image: newMessage.image,
         }
 
-        const receiverSocketId = getReceiverSocketId(receiverId);
+        const receiverSocketId = getReceiverSocketId(receiverId.toString());
         console.log("receiverSocketId ", receiverSocketId)
         console.log("receiverId ", receiverId)
         if(receiverSocketId){

@@ -1,5 +1,4 @@
 import { useRef, useState, useEffect } from "react";
-import "./Login.css"
 import axios from "../../utils/axios";
 import UseAuth from "../../Hooks/UseAuth";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -18,6 +17,7 @@ const Login = () => {
   const LOGIN_URL = "users/login"
   const {connectSocket, setUserId} = useChatStore();
   const setUserAuth = useChatStore((state) => state.setUserAuth);
+  const setUserProfile = useChatStore((state) => state.setUserProfile);
 
   useEffect(() => {
     userRef.current.focus()
@@ -48,6 +48,7 @@ const Login = () => {
       const user = { accessToken, email }
       setUserAuth({user})
       setUserId(response.data.data.user._id)
+      setUserProfile(response.data.data.user)
       connectSocket();
       setAuth({ user })
       navigate('/');
@@ -73,28 +74,66 @@ const Login = () => {
 
   }
   return (
-    <section className="login-section">
-      <p ref={errRef} className={errorMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errorMsg}</p>
-      <h1>Login</h1>
-      <form onSubmit={submitHandler}>
-        <label htmlFor="email">Email:</label>
-        <input
-          type="email"
-          id="email"
-          onChange={(e) => setEmail(e.target.value)}
-          value={email}
-          autoComplete="off"
-          ref={userRef}
-        />
-        <label htmlFor="password">Password:</label>
-        <input
-          type="password"
-          id="password"
-          onChange={(e) => setPassword(e.target.value)}
-          value={password}
-        />
-        <button>Log In</button>
-      </form>
+    <section className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
+        <p 
+          ref={errRef} 
+          className={errorMsg 
+            ? "mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg"
+            : "sr-only"
+          } 
+          aria-live="assertive"
+        >
+          {errorMsg}
+        </p>
+
+        <h1 className="text-3xl font-bold text-center text-gray-900 mb-8">
+          Login
+        </h1>
+
+        <form onSubmit={submitHandler} className="space-y-6">
+          <div>
+            <label 
+              htmlFor="email" 
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+              autoComplete="off"
+              ref={userRef}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+
+          <div>
+            <label 
+              htmlFor="password" 
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              onChange={(e) => setPassword(e.target.value)}
+              value={password}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
+          >
+            Log In
+          </button>
+        </form>
+      </div>
     </section>
   )
 }

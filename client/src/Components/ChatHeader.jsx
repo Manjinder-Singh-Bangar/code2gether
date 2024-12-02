@@ -3,7 +3,10 @@ import ReceiverUserProfile from './ReceiverUserProfile'
 
 const ChatHeader = () => {
   return (
-    <ReceiverUserProfile />
+    <section className='sticky top-0'>
+
+      <ReceiverUserProfile />
+    </section>
   )
 }
 

@@ -10,6 +10,11 @@ export const useChatStore = create((set, get) => ({
     set({auth: newAuth})
   },
   messages: [],
+  userProfile: null,
+  setUserProfile: (newUserProfile) => {
+    console.log("setting new user profile: ", newUserProfile)
+    set({userProfile: newUserProfile})
+  },
   userId: null,
   setUserId: (newUserId) => set({ userId: newUserId }),
   users: [],
@@ -37,6 +42,7 @@ export const useChatStore = create((set, get) => ({
       const res = await axiosPrivate.get(`/message/${userId}`);
       console.log('Messages received:', res.data.data);
       set({ messages: res.data.data });
+
     } catch (error) {
       console.error('Error fetching messages:', error);
       toast.error(error.response?.data?.message || 'Failed to fetch messages');

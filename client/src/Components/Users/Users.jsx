@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from "react"
 import UseAxiosPrivate from "../../Hooks/UseAxiosPrivate";
 import UseAuth from "../../Hooks/UseAuth";
-import "./Users.css"
 import { useChatStore } from "../../Store/useChatStore";
 import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faMessage } from '@fortawesome/free-solid-svg-icons'
 
 const Users = () => {
   const {selectedUser, onlineUsers} = useChatStore()
@@ -28,6 +29,7 @@ const Users = () => {
         })
 
         setUsers(response.data.data)
+        console.log("users: ", response.data.data)
       } catch (error) {
         if (error.name === "CanceledError") {
           console.log("Request canceled:", error.message);
@@ -52,30 +54,41 @@ const Users = () => {
   
   return (
     <>
-      <h2 className="center-text">All the Users</h2>
+  <div className="max-w-4xl mx-auto px-4 py-8">
+    <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">Chat Users</h2>
 
-      <div className="users">
-        {users?.length ? (
-          users.map((item) => {
-
-            return (
-              <>
-                <div  className="user" >
-                  <div className="user-body">
-                    <img src={item.profilePicture} alt="" />
-                    <h1>{item.username}</h1>
-                    <h2>{item.fullName}</h2>  
-                  </div>
-                  <Link ref={user} key={item._id} onClick={() => handleChatLinkClick(item._id)} to={`/chat/${item._id}`} className="btn">Chat</Link>
+    <div className="space-y-4">
+      {users?.length ? (
+        users.map((item) => (
+          <div key={item._id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+            <div className="flex items-center justify-between p-4">
+              <div className="flex items-center space-x-4">
+                <img 
+                  src={item.profilePicture} 
+                  alt={item.username}
+                  className="w-12 h-12 rounded-full object-cover border-2 border-gray-200" 
+                />
+                <div>
+                  <h3 className="font-semibold text-gray-800">{item.username}</h3>
+                  <p className="text-sm text-gray-600">{item.fullName}</p>
                 </div>
-              </>
-            );
-          })
-        ) : (
-          <p>No Users to display</p>
-        )}
-      </div>
-
+              </div>
+              <Link
+                ref={user}
+                onClick={() => handleChatLinkClick(item._id)}
+                to={`/chat/${item._id}`}
+                className="p-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white transition-colors duration-300"
+              >
+                <FontAwesomeIcon icon={faMessage} className="w-5 h-5" />
+              </Link>
+            </div>
+          </div>
+        ))
+      ) : (
+        <p className="text-center text-gray-600">No Users to display</p>
+      )}
+    </div>
+  </div>
     </>
   )
 }
