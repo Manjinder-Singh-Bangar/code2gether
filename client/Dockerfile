@@ -1,15 +1,14 @@
-FROM node:20.6.0
+FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package.json .
+COPY package*.json .
 
 RUN npm install
 
-EXPOSE 5173
-
-ENV key=value
-
 COPY . .
 
-CMD [ "npm", "run", "dev" ]
+EXPOSE 5173
+
+CMD ["npm", "run", "dev"]
+

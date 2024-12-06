@@ -1,0 +1,26 @@
+name: codetogether
+
+services:
+  mongo:
+    image: mongo:7.0.12  
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo-data:/data/db
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: ./server/.env
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    ports:
+      - 5000:5000
+
+volumes:
+  mongo-data:
+networks:
+  codetogether:
+    driver: bridge

@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon ./src/index.js",
+    "dev": "nodemon --legacy-watch ./src/index.js",
+    "start": "nodemon --legacy-watch ./src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Manjinder",

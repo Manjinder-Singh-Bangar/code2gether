@@ -15,7 +15,7 @@ const PORT = process.env.PORT;
 app.use(cookieparser());
 
 app.get("/", (req, res) =>{
-    res.send("hello");
+    res.send("hello world");
 })
 
 app.use(cors({
